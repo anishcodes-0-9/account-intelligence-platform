@@ -1,0 +1,16 @@
+export { createPrismaClient, PrismaClient, Prisma, EnrichmentStatus } from "./db.js";
+export type { Company, Contact, EnrichmentRecord, ApiKey, ExportJob } from "./db.js";
+export { CompanyRepository, type CompanySearchParams } from "./repositories/company-repository.js";
+export { ContactRepository, type ContactSearchParams, type ContactWithCompany } from "./repositories/contact-repository.js";
+export { EnrichmentRepository, type NewEnrichmentRecord } from "./repositories/enrichment-repository.js";
+export { ApiKeyRepository, type NewApiKey } from "./repositories/api-key-repository.js";
+export { ExportRepository, type NewExportJob } from "./repositories/export-repository.js";
+export { seedDatabase, type SeedResult } from "./seed/seed.js";
+export { AppError, ValidationError, NotFoundError, UnauthenticatedError, ForbiddenError, ProviderError, ExportLimitError, InternalError } from "./errors/app-error.js";
+export { mapError, INTERNAL_ERROR_MESSAGE, type ErrorLogger, type MappedError } from "./errors/map-error.js";
+export { createLogger, stderrDestination, REDACT_PATHS, type Logger, type LoggerOptions } from "./logging/logger.js";
+export { requireScope, type AuthPrincipal } from "./auth/principal.js";
+export { ApiKeyService, type ApiKeyServiceOptions } from "./auth/api-key-service.js";
+export { CompanyService } from "./companies/company-service.js";
+export { ContactService } from "./contacts/contact-service.js";
+export { FILLER_TERMS, tokenize, parseSearchQuery, matchesAllTokens } from "./companies/search-query.js";

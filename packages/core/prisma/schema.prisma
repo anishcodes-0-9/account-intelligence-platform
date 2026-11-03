@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Ids for Company/Contact are assigned by the seed ("cmp_1", "cnt_1"); the rest are generated.
+model Company {
+  id          String    @id
+  name        String
+  website     String
+  industry    String
+  employees   Int
+  country     String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  contacts    Contact[]
+
+  @@index([country])
+  @@index([industry])
+  @@index([employees])
+  @@map("companies")
+}
+
+model Contact {
+  id          String             @id
+  companyId   String
+  firstName   String
+  lastName    String
+  fullName    String
+  jobTitle    String
+  email       String?
+  linkedin    String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  enrichments EnrichmentRecord[]
+
+  @@index([companyId])
+  @@index([jobTitle])
+  @@map("contacts")
+}
+
+enum EnrichmentStatus {
+  SUCCESS
+  PARTIAL
+  NOT_FOUND
+  FAILED
+
+  @@map("enrichment_status")
+}
+
+model EnrichmentRecord {
+  id         String           @id @default(cuid())
+  contactId  String
+  provider   String
+  status     EnrichmentStatus
+  returned   Json
+  provenance Json
+  error      String?
+  createdAt  DateTime         @default(now())
+  contact    Contact          @relation(fields: [contactId], references: [id], onDelete: Cascade)
+
+  @@index([contactId, createdAt])
+  @@map("enrichment_records")
+}
+
+model ApiKey {
+  id         String      @id @default(cuid())
+  name       String
+  keyHash    String      @unique
+  scopes     String[]
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  lastUsedAt DateTime?
+  createdAt  DateTime    @default(now())
+  exports    ExportJob[]
+
+  @@map("api_keys")
+}
+
+model ExportJob {
+  id         String   @id @default(cuid())
+  apiKeyId   String
+  contactIds String[]
+  rowCount   Int
+  content    String   @db.Text
+  tokenHash  String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  apiKey     ApiKey   @relation(fields: [apiKeyId], references: [id], onDelete: Restrict)
+
+  @@index([apiKeyId])
+  @@index([expiresAt])
+  @@map("export_jobs")
+}
