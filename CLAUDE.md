@@ -35,7 +35,7 @@ Node 24 is required (`.nvmrc`; run `nvm use`). Setup order matters for tests:
 - `pnpm spike:http`, `pnpm spike:stdio` (temporary M1 spike, deleted in M5)
 
 ## Git and dependencies
-- Do not commit, push or deploy without explicit approval.
+- Git initialized after M3 (baseline `98906d9`, branch `main`). Do not commit, push or deploy without explicit approval. Never commit `.env` or raw keys.
 - State a dependency's purpose before adding it; pin exact versions (`.npmrc` save-exact).
 
 ## Workflow
