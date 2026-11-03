@@ -8,9 +8,15 @@ export { ExportRepository, type NewExportJob } from "./repositories/export-repos
 export { seedDatabase, type SeedResult } from "./seed/seed.js";
 export { AppError, ValidationError, NotFoundError, UnauthenticatedError, ForbiddenError, ProviderError, ExportLimitError, InternalError } from "./errors/app-error.js";
 export { mapError, INTERNAL_ERROR_MESSAGE, type ErrorLogger, type MappedError } from "./errors/map-error.js";
-export { createLogger, stderrDestination, REDACT_PATHS, type Logger, type LoggerOptions } from "./logging/logger.js";
+export { createLogger, stderrDestination, describeError, REDACT_PATHS, type Logger, type LoggerOptions } from "./logging/logger.js";
+export { redactSecrets } from "./security/redact.js";
 export { requireScope, type AuthPrincipal } from "./auth/principal.js";
 export { ApiKeyService, type ApiKeyServiceOptions } from "./auth/api-key-service.js";
 export { CompanyService } from "./companies/company-service.js";
 export { ContactService } from "./contacts/contact-service.js";
 export { FILLER_TERMS, tokenize, parseSearchQuery, matchesAllTokens } from "./companies/search-query.js";
+export { EnrichmentService, type EnrichmentServiceOptions } from "./enrichment/enrichment-service.js";
+export { MockEnrichmentProvider, MOCK_PROVIDER_NAME, mockOutcomeFor, type EnrichmentProvider, type MockOutcome, type ProviderResult } from "./enrichment/mock-provider.js";
+export { sanitizeProviderError } from "./enrichment/sanitize-error.js";
+export { ExportService, EXPORT_TTL_MS, type DownloadedExport, type ExportServiceOptions } from "./exports/export-service.js";
+export { buildContactsCsv, escapeCsvField, neutralizeFormula, CSV_COLUMNS, type CsvRow } from "./exports/csv.js";

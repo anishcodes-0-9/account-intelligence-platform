@@ -1,4 +1,4 @@
-import type { EnrichmentRecord, EnrichmentStatus, Prisma, PrismaClient } from "../db.js";
+import type { DbClient, EnrichmentRecord, EnrichmentStatus, Prisma } from "../db.js";
 
 export interface NewEnrichmentRecord {
   contactId: string;
@@ -10,7 +10,7 @@ export interface NewEnrichmentRecord {
 }
 
 export class EnrichmentRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   create({ error, ...rest }: NewEnrichmentRecord): Promise<EnrichmentRecord> {
     return this.db.enrichmentRecord.create({ data: { ...rest, ...(error !== undefined ? { error } : {}) } });

@@ -40,7 +40,7 @@ describe("keys CLI (real process, real database)", () => {
 
     const listed = keys("list");
     expect(listed.status).toBe(0);
-    expect(listed.stdout).not.toContain((key as string).split("_")[2] as string); // secret never listed
+    expect(listed.stdout).not.toContain((key as string).split("_").slice(2).join("_")); // secret never listed (it may itself contain "_")
     expect(listed.stdout).not.toContain("keyHash");
     const parsed = JSON.parse(listed.stdout) as Array<{ id: string; name: string; revokedAt: string | null }>;
     expect(parsed.find((k) => k.id === id)).toMatchObject({ name: "cli-test", revokedAt: null });
