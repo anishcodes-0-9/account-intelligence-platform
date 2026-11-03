@@ -1,0 +1,13 @@
+{
+  "tool": "export_contacts",
+  "keyScopes": [
+    "companies:read"
+  ],
+  "isError": true,
+  "structuredContent": {
+    "error": {
+      "code": "FORBIDDEN",
+      "message": "Missing required scope: contacts:export"
+    }
+  }
+}

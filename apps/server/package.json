@@ -7,7 +7,8 @@
     "typecheck": "tsc -p tsconfig.json",
     "mcp:stdio": "tsx src/bin/mcp-stdio.ts",
     "mcp:http": "tsx src/bin/mcp-http.ts",
-    "keys": "tsx src/bin/keys.ts"
+    "keys": "tsx src/bin/keys.ts",
+    "demo:mcp": "tsx demo/mcp-client-demo.ts"
   },
   "dependencies": {
     "@aip/contracts": "workspace:*",

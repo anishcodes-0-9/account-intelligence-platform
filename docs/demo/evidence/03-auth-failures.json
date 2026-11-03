@@ -1,0 +1,22 @@
+[
+  {
+    "label": "missing Authorization header",
+    "outcome": "rejected",
+    "detail": "Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"
+  },
+  {
+    "label": "malformed/garbage API key",
+    "outcome": "rejected",
+    "detail": "Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"
+  },
+  {
+    "label": "expired API key",
+    "outcome": "rejected",
+    "detail": "Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"
+  },
+  {
+    "label": "revoked API key",
+    "outcome": "rejected",
+    "detail": "Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"
+  }
+]

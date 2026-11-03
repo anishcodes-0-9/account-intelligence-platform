@@ -1,0 +1,80 @@
+{
+  "concurrencyLimit": 3,
+  "operation": "get_company",
+  "independentInputs": [
+    "cmp_1",
+    "cmp_2",
+    "cmp_3",
+    "cmp_4",
+    "cmp_5",
+    "cmp_6"
+  ],
+  "rationale": "Each call reads a different companyId with no shared mutable state, so the calls are safe to run concurrently; the client (this script's own Semaphore), not the MCP protocol, enforces the limit of 3 in flight at once.",
+  "maxObservedInFlight": 3,
+  "overlappingExecutionObserved": true,
+  "timelineMs": [
+    {
+      "companyId": "cmp_1",
+      "startMs": 0,
+      "endMs": 8
+    },
+    {
+      "companyId": "cmp_2",
+      "startMs": 0,
+      "endMs": 12
+    },
+    {
+      "companyId": "cmp_3",
+      "startMs": 0,
+      "endMs": 29
+    },
+    {
+      "companyId": "cmp_4",
+      "startMs": 8,
+      "endMs": 14
+    },
+    {
+      "companyId": "cmp_5",
+      "startMs": 12,
+      "endMs": 16
+    },
+    {
+      "companyId": "cmp_6",
+      "startMs": 14,
+      "endMs": 17
+    }
+  ],
+  "liveSampler": {
+    "description": "sem.currentInFlight polled every ~1ms for the duration of the concurrent run -- a direct, live observation of overlap, not one reconstructed from start/end timestamps after the fact.",
+    "sampleCount": 24,
+    "maxSampledInFlight": 3,
+    "samplesAtTwoOrMore": 13,
+    "samplesAtLimit": 12,
+    "samples": [
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      2,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  }
+}

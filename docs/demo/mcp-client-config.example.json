@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "aip": {
+      "type": "http",
+      "url": "http://127.0.0.1:3001/mcp",
+      "headers": { "Authorization": "Bearer aip_<keyId>_<secret>" }
+    }
+  }
+}

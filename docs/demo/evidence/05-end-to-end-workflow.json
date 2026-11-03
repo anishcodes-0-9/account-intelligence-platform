@@ -1,0 +1,150 @@
+{
+  "step1_search_companies": {
+    "input": {
+      "query": "Intelligence",
+      "country": "Australia",
+      "limit": 10
+    },
+    "output": {
+      "results": [
+        {
+          "id": "cmp_5",
+          "name": "Brindle Labs",
+          "industry": "Artificial Intelligence",
+          "employees": 6505
+        },
+        {
+          "id": "cmp_41",
+          "name": "Brindle Works",
+          "industry": "Artificial Intelligence",
+          "employees": 6504
+        },
+        {
+          "id": "cmp_21",
+          "name": "Lumivar Systems",
+          "industry": "Artificial Intelligence",
+          "employees": 402
+        },
+        {
+          "id": "cmp_45",
+          "name": "Lumivar Works",
+          "industry": "Artificial Intelligence",
+          "employees": 409
+        },
+        {
+          "id": "cmp_25",
+          "name": "Veltrix Analytics",
+          "industry": "Artificial Intelligence",
+          "employees": 82
+        },
+        {
+          "id": "cmp_1",
+          "name": "Veltrix Labs",
+          "industry": "Artificial Intelligence",
+          "employees": 75
+        }
+      ]
+    }
+  },
+  "step2_get_company": {
+    "input": {
+      "companyId": "cmp_5"
+    },
+    "output": {
+      "id": "cmp_5",
+      "name": "Brindle Labs",
+      "website": "https://brindlelabs.example",
+      "industry": "Artificial Intelligence",
+      "employees": 6505,
+      "description": "Brindle Labs builds AI assistants that automate enterprise customer support. Based in Australia.",
+      "country": "Australia"
+    }
+  },
+  "step3_search_contacts": {
+    "input": {
+      "companyId": "cmp_5"
+    },
+    "output": {
+      "contacts": [
+        {
+          "id": "cnt_20",
+          "name": "Elena Williams",
+          "title": "Finance Manager"
+        },
+        {
+          "id": "cnt_18",
+          "name": "Grace Wright",
+          "title": "Head of Data"
+        },
+        {
+          "id": "cnt_19",
+          "name": "Ravi Murphy",
+          "title": "Design Lead"
+        },
+        {
+          "id": "cnt_17",
+          "name": "Tane Campbell",
+          "title": "Chief Executive Officer"
+        }
+      ]
+    }
+  },
+  "step4_enrich_contact": [
+    {
+      "contactId": "cnt_20",
+      "result": {
+        "error": {
+          "code": "PROVIDER_ERROR",
+          "message": "Enrichment provider failed"
+        }
+      }
+    },
+    {
+      "contactId": "cnt_18",
+      "result": {
+        "email": "grace.wright@brindlelabs.example",
+        "linkedin": "https://linkedin.example/in/synthetic-grace-wright-cnt-18",
+        "status": "SUCCESS",
+        "provider": "mock-synthetic",
+        "provenance": [
+          {
+            "field": "email",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.852Z"
+          },
+          {
+            "field": "linkedin",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.852Z"
+          }
+        ]
+      }
+    }
+  ],
+  "step5_export_contacts": {
+    "input": {
+      "contactIds": [
+        "cnt_20",
+        "cnt_18"
+      ]
+    },
+    "output": {
+      "downloadUrl": "http://127.0.0.1:3001/downloads/***redacted***",
+      "exportId": "cmw199l4n0002z0rh5y07gcn4",
+      "expiresAt": "2026-11-03T22:39:34.871Z",
+      "rowCount": 2
+    }
+  },
+  "step6_download": {
+    "url": "http://127.0.0.1:3001/downloads/***redacted***",
+    "status": 200,
+    "contentType": "text/csv; charset=utf-8",
+    "header": "id,name,title,email,linkedin",
+    "rowCount": 2,
+    "matchesReportedRowCount": true
+  }
+}

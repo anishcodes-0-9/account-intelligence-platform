@@ -1,0 +1,8 @@
+=== 1. Missing Authorization header -> 401 UNAUTHENTICATED ===
+{"error":{"code":"auth_required","message":"Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"}}
+
+=== 2. Malformed/invalid API key -> 401 UNAUTHENTICATED ===
+{"error":{"code":"auth_required","message":"Error POSTing to endpoint: {\"error\":{\"code\":\"UNAUTHENTICATED\",\"message\":\"Invalid, expired or revoked API key\"}}"}}
+
+=== 3. Valid key, insufficient scope: companies-only key calling export_contacts -> client-side schema-validation error (see docs/demo/README.md) ===
+{"error":{"code":"error","message":"data must have required property 'downloadUrl', data must have required property 'exportId', data must have required property 'expiresAt', data must have required property 'rowCount', data must NOT have additional properties"}}

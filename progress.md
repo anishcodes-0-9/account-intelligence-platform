@@ -124,5 +124,66 @@ Limitations: no OAuth, no external enrichment provider (unchanged from M3/M4); R
 against any client other than Node's own `http` module (no browser/CORS testing, since `apps/web` is not
 built yet).
 
+## M7 - MCP client demonstration: complete, awaiting review
+Done: a reproducible, end-to-end demonstration of the platform through two genuine MCP-compatible
+clients against the real, running server (`pnpm mcp:http`) and a real database -- no REST calls and no
+test framework substitute for any of it. Spawning a nested, non-interactive Claude Code agent to drive
+live tool calls as the client was blocked by this environment's own sandbox policy ("Create Unsafe
+Agents"), so the brief's explicit fallback was used instead: MCP Inspector CLI
+(`@modelcontextprotocol/inspector --cli`, an independent third-party client) for tool discovery and
+auth/scope probing, and the MCP TypeScript SDK's own `Client`/`StreamableHTTPClientTransport` -- the same
+client this project's tests already use and `docs/mcp-server.md` already documents as "tested against"
+-- in a new demo script (`apps/server/demo/mcp-client-demo.ts`, run via `pnpm --filter @aip/server
+demo:mcp`) for the full workflow and the concurrency demonstration. Claude Code itself did confirm this
+environment can connect to the server at all (`claude mcp add`/`claude mcp list`), satisfying the
+brief's first-choice client for connection configuration, short of live interactive tool-calling inside
+this one non-interactive session.
+
+Covered and captured as real evidence under `docs/demo/evidence/` (see `docs/demo/README.md` for the
+full breakdown): all five tools discovered with their exact schemas; missing/malformed/expired/revoked
+keys all rejected identically (`401 UNAUTHENTICATED`, key never echoed); a companies-only key rejected
+with `FORBIDDEN` on `export_contacts` (plus a documented, genuine finding -- MCP Inspector CLI's strict
+`outputSchema` validation can't display that same `isError` result, since `export_contacts`'s schema
+only describes the success shape, the same limitation `docs/mcp-server.md` already documents from a
+different angle); a real `search_companies` (AI companies in Australia) -> `get_company` ->
+`search_contacts` -> `enrich_contact` -> `export_contacts` -> CSV download workflow against real seed
+data, with the downloaded CSV's header, row count and contact ids verified against the tool's own
+`rowCount`; and a bounded-concurrency run of six `get_company` calls for six different company ids,
+capped at 3 in flight at once by a small `Semaphore` the demo script itself owns (no dependency added),
+with a captured per-call timeline proving real overlap -- explicitly not something MCP itself provides.
+
+No business logic changed; no new dependencies; no frontend built. New files: `apps/server/demo/
+mcp-client-demo.ts`, `docs/demo/README.md`, `docs/demo/mcp-client-config.example.json`,
+`docs/demo/evidence/*`, root `README.md` (did not exist before this milestone). `apps/server/
+tsconfig.json`'s `include` gained `demo`; `apps/server/package.json` gained a `demo:mcp` script.
+`pnpm typecheck`/`lint`/`test` all green (test suite unchanged from M6: 262 passing -- this milestone
+added no new automated tests, since the brief's point was a real client demonstration, not more
+integration coverage).
+
+Limitations: no screenshots/recordings (no display in this environment to capture from; manual capture
+steps for a human with MCP Inspector's web UI or an interactive Claude Code session are documented in
+`docs/demo/README.md` instead of being fabricated); live, interactive Claude-Code-as-client tool-calling
+within one session is configuration-verified but not executed, for the sandbox-policy reason above, not
+an AIP limitation.
+
+A post-review reproducibility and evidence audit found and fixed one real issue: `downloadUrl`s (the
+project's own credential, per CLAUDE.md -- "never log them or store the raw token") were being saved in
+cleartext in evidence JSON and printed to the console. Fixed with a `redactDownloadUrl()` helper in the
+demo script, mirroring the real request logger's own `/downloads/<token>` scrubbing
+(`packages/core/src/logging/logger.ts`); every evidence file now carries `***redacted***` in place of
+the token, while the script still fetches the real URL to verify each download. The audit also: added a
+second, "clean happy path" run (`05b-happy-path-workflow.json`, `happy-path-export.csv`) using two
+contacts whose `SUCCESS` enrichment outcome is deterministic and asserted at runtime, alongside the
+original mixed-outcome run (kept as error-handling evidence); strengthened the concurrency evidence with
+a live sampler of the semaphore's actual in-flight counter (polled every ~1ms during the run), not just
+reconstructed start/end timestamps; rewrote `docs/demo/README.md`'s "Clients used" section so it cannot
+be read as Claude Code having executed the workflow -- Claude Code's role is connection verification
+only (`claude mcp add`/`list`/`get`, actually run against the live server this time and captured as
+`00-claude-code-mcp-connection.txt`, not just described), MCP Inspector CLI is the independent
+discovery/auth client, and the MCP SDK's own `Client` is named as the one that ran the complete workflow
+and concurrency demo; and re-verified the entire setup/reproduction path from a literal fresh `.env.example`
+copy with no undocumented manual step found. `pnpm typecheck`/`lint`/`test` (262 passing) and
+`git diff --check` all re-confirmed green after these changes.
+
 ## Next
-- **M7 is next (not started):** `apps/web` (Next.js), talking to the M6 REST API only.
+- **M8 is next (not started):** `apps/web` (Next.js), talking to the M6 REST API only.
