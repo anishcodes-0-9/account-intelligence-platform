@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
-    "spike:http": "tsx src/spike/http-bin.ts",
-    "spike:stdio": "tsx src/spike/stdio-bin.ts",
+    "mcp:stdio": "tsx src/bin/mcp-stdio.ts",
+    "mcp:http": "tsx src/bin/mcp-http.ts",
     "keys": "tsx src/bin/keys.ts"
   },
   "dependencies": {

@@ -32,7 +32,7 @@ Node 24 is required (`.nvmrc`; run `nvm use`). Setup order matters for tests:
 - `pnpm typecheck` / `pnpm lint` / `pnpm test` (needs steps 1-4; tests build their own throwaway databases from the migrations, never touching the dev DB)
 - Schema change: edit `schema.prisma`, `pnpm db:migrate:dev --name <name>`, commit the migration. Never `db push`.
 - API keys: `pnpm keys create --name <n> --scopes companies:read,contacts:read [--expires-in-days N]`, `pnpm keys list`, `pnpm keys revoke <id>` (raw key shown once at creation)
-- `pnpm spike:http`, `pnpm spike:stdio` (temporary M1 spike, deleted in M5)
+- MCP server: `AIP_API_KEY=<key> pnpm mcp:stdio`, `pnpm mcp:http` (serves `/mcp`). Details: `docs/mcp-server.md`.
 
 ## Enrichment and export
 - `EnrichmentProvider.enrich` returns `{email, linkedin}` or throws; the service derives SUCCESS/PARTIAL/NOT_FOUND from the fields and turns a throw into a FAILED record plus `PROVIDER_ERROR`. Providers must declare `synthetic`; nothing is ever `verified`.
