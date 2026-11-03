@@ -1,5 +1,5 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/client.js";
+import { PrismaClient, type Prisma } from "./generated/prisma/client.js";
 
 /** Prisma 7 requires a driver adapter; all callers go through this factory. */
 export function createPrismaClient(connectionString: string): PrismaClient {
@@ -15,3 +15,6 @@ export type {
   ApiKey,
   ExportJob,
 } from "./generated/prisma/client.js";
+
+/** What a repository can run queries against: the top-level client, or an interactive transaction's client. */
+export type DbClient = PrismaClient | Prisma.TransactionClient;

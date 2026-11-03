@@ -34,6 +34,11 @@ Node 24 is required (`.nvmrc`; run `nvm use`). Setup order matters for tests:
 - API keys: `pnpm keys create --name <n> --scopes companies:read,contacts:read [--expires-in-days N]`, `pnpm keys list`, `pnpm keys revoke <id>` (raw key shown once at creation)
 - `pnpm spike:http`, `pnpm spike:stdio` (temporary M1 spike, deleted in M5)
 
+## Enrichment and export
+- `EnrichmentProvider.enrich` returns `{email, linkedin}` or throws; the service derives SUCCESS/PARTIAL/NOT_FOUND from the fields and turns a throw into a FAILED record plus `PROVIDER_ERROR`. Providers must declare `synthetic`; nothing is ever `verified`.
+- Download URLs (`<base>/downloads/<token>`) are credentials: never log them or store the raw token. The logger scrubs `/downloads/<token>`; keep it that way.
+- Secret redaction has one source of truth: `packages/core/src/security/redact.ts`. Persistence (`enrichment/sanitize-error.ts`) and logging (`logging/logger.ts`'s `describeError`) both redact through it; do not add a second pattern list. Logging a raw `Error`/`cause` (e.g. `mapError`'s `logger.error({ err: error })`) is fine *because* `createLogger` intercepts every Error before Pino sees it and replaces it with `describeError`'s plain, redacted representation -- Pino's own standard `err` serializer is never called with a live Error. If you log through anything other than `createLogger`, redact through `redactSecrets` yourself first.
+
 ## Git and dependencies
 - Git initialized after M3 (baseline `98906d9`, branch `main`). Do not commit, push or deploy without explicit approval. Never commit `.env` or raw keys.
 - State a dependency's purpose before adding it; pin exact versions (`.npmrc` save-exact).

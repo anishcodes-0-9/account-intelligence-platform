@@ -26,7 +26,13 @@ export interface MappedError {
 /**
  * The single place errors become client responses, for REST and MCP adapters alike.
  * AppErrors keep their message; anything else (SQL errors, SDK errors, bugs) and INTERNAL
- * AppErrors are logged in full and replaced by a generic message.
+ * AppErrors are logged in full and replaced by a generic message. Passing the live `error` (including a
+ * ProviderError's `cause`) to `logger.error({ err: error, ... })` is safe: `logging/logger.ts`'s
+ * `createLogger` intercepts every call before Pino processes it and replaces any Error -- the top-level
+ * one, its `cause` chain, anything nested in `context` -- with a plain, pre-redacted representation
+ * (`describeError`). Pino itself never receives a live Error object. This keeps full server-side
+ * diagnostics (stack traces, SQL text, upstream connection errors) available for debugging, minus every
+ * known secret shape, which is deliberate and predates this module.
  */
 export function mapError(error: unknown, logger: ErrorLogger, context: Record<string, unknown> = {}): MappedError {
   if (error instanceof AppError && error.code !== "INTERNAL") {

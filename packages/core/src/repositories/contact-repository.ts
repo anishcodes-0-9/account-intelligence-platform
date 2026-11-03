@@ -1,4 +1,4 @@
-import type { Company, Contact, Prisma, PrismaClient } from "../db.js";
+import type { Company, Contact, DbClient, Prisma } from "../db.js";
 
 export type ContactWithCompany = Contact & { company: Company };
 
@@ -10,7 +10,7 @@ export interface ContactSearchParams {
 }
 
 export class ContactRepository {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(private readonly db: DbClient) {}
 
   create(data: Prisma.ContactUncheckedCreateInput): Promise<Contact> {
     return this.db.contact.create({ data });
