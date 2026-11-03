@@ -1,0 +1,117 @@
+{
+  "serverUrl": "http://127.0.0.1:3001/mcp",
+  "transport": "StreamableHTTPClientTransport (@modelcontextprotocol/client)",
+  "toolCount": 5,
+  "tools": [
+    {
+      "name": "search_companies",
+      "title": "Search companies",
+      "description": "Search companies by free-text query and/or country. Requires the companies:read scope.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "description": "Free-text terms, e.g. \"AI companies\". Every term must match a whole word in name, industry or description.",
+            "type": "string",
+            "maxLength": 200
+          },
+          "country": {
+            "description": "Exact country name, case-insensitive, e.g. Australia.",
+            "type": "string",
+            "maxLength": 100
+          },
+          "limit": {
+            "description": "Max results (default 10, max 50).",
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      }
+    },
+    {
+      "name": "get_company",
+      "title": "Get company",
+      "description": "Fetch one company by id. Requires the companies:read scope.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "companyId"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      }
+    },
+    {
+      "name": "search_contacts",
+      "title": "Search contacts",
+      "description": "Search contacts by companyId and/or jobTitle. Requires the contacts:read scope.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "companyId": {
+            "description": "Company id, e.g. cmp_1.",
+            "type": "string",
+            "maxLength": 100
+          },
+          "jobTitle": {
+            "description": "Case-insensitive job title text, e.g. \"Engineer\".",
+            "type": "string",
+            "maxLength": 100
+          }
+        },
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      }
+    },
+    {
+      "name": "enrich_contact",
+      "title": "Enrich contact",
+      "description": "Enrich one contact's email and LinkedIn via the synthetic mock provider. Requires the contacts:enrich scope. Results are synthetic fixtures, never verified real-world data.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contactId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "contactId"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      }
+    },
+    {
+      "name": "export_contacts",
+      "title": "Export contacts",
+      "description": "Export up to 200 contacts as a CSV download link, valid for 15 minutes. Requires the contacts:export scope.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contactIds": {
+            "minItems": 1,
+            "maxItems": 1000,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100
+            }
+          }
+        },
+        "required": [
+          "contactIds"
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "note": "Deterministic SUCCESS-outcome contacts, verified at runtime (not assumed); the mock provider was not modified.",
+  "step1_enrich_contact": [
+    {
+      "contactId": "cnt_17",
+      "result": {
+        "email": "tane.campbell@brindlelabs.example",
+        "linkedin": "https://linkedin.example/in/synthetic-tane-campbell-cnt-17",
+        "status": "SUCCESS",
+        "provider": "mock-synthetic",
+        "provenance": [
+          {
+            "field": "email",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.888Z"
+          },
+          {
+            "field": "linkedin",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.888Z"
+          }
+        ]
+      }
+    },
+    {
+      "contactId": "cnt_19",
+      "result": {
+        "email": "ravi.murphy@brindlelabs.example",
+        "linkedin": "https://linkedin.example/in/synthetic-ravi-murphy-cnt-19",
+        "status": "SUCCESS",
+        "provider": "mock-synthetic",
+        "provenance": [
+          {
+            "field": "email",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.899Z"
+          },
+          {
+            "field": "linkedin",
+            "source": "mock-synthetic",
+            "synthetic": true,
+            "verified": false,
+            "observedAt": "2026-11-03T22:24:34.899Z"
+          }
+        ]
+      }
+    }
+  ],
+  "step2_export_contacts": {
+    "input": {
+      "contactIds": [
+        "cnt_17",
+        "cnt_19"
+      ]
+    },
+    "output": {
+      "downloadUrl": "http://127.0.0.1:3001/downloads/***redacted***",
+      "exportId": "cmw199l5q0005z0rh16rcadt9",
+      "expiresAt": "2026-11-03T22:39:34.910Z",
+      "rowCount": 2
+    }
+  },
+  "step3_download": {
+    "url": "http://127.0.0.1:3001/downloads/***redacted***",
+    "status": 200,
+    "header": "id,name,title,email,linkedin",
+    "rowCount": 2,
+    "rows": [
+      "cnt_17,Tane Campbell,Chief Executive Officer,tane.campbell@brindlelabs.example,https://linkedin.example/in/synthetic-tane-campbell-cnt-17",
+      "cnt_19,Ravi Murphy,Design Lead,ravi.murphy@brindlelabs.example,https://linkedin.example/in/synthetic-ravi-murphy-cnt-19"
+    ]
+  }
+}

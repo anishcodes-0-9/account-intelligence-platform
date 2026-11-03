@@ -1,0 +1,32 @@
+Real output of `claude mcp add`, `claude mcp list` and `claude mcp get` run against the live AIP server
+in this session, confirming Claude Code's own MCP-client machinery can connect to and health-check it.
+This is connection/configuration verification only -- it does not execute any tool call; the end-to-end
+workflow and concurrency demonstration are driven by the MCP SDK Client instead (see docs/demo/README.md,
+"Clients used"). The raw API key is redacted below; `claude mcp add` itself redacted the Authorization
+header in its own output automatically.
+
+$ claude mcp add --transport http aip http://127.0.0.1:3001/mcp --header "Authorization: Bearer <redacted>" --scope local
+Added HTTP MCP server aip with URL: http://127.0.0.1:3001/mcp to local config
+Headers: {
+  "Authorization": "[REDACTED]"
+}
+File modified: /Users/anishkrishnan/.claude.json [project: /private/tmp/claude-mcp-check]
+
+$ claude mcp list
+Checking MCP server health...
+
+claude.ai Claude Docs: https://api.anthropic.com/v1/pages/mcp - [connected]
+claude.ai Gmail: https://gmailmcp.googleapis.com/mcp/v1 - [connected]
+claude.ai Google Drive: https://drivemcp.googleapis.com/mcp/v1 - [connected]
+aip: http://127.0.0.1:3001/mcp (HTTP) - [connected]
+
+$ claude mcp get aip
+aip:
+  Scope: Local config (private to you in this project)
+  Status: [connected]
+  Type: http
+  URL: http://127.0.0.1:3001/mcp
+  Headers:
+    Authorization: Bearer <redacted>
+
+To remove this server, run: claude mcp remove aip -s local
