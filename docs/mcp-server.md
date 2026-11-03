@@ -15,8 +15,13 @@ apps/server/src/mcp/
   http-app.ts         Fastify /mcp route: Bearer auth, Host/Origin checks, Streamable HTTP wiring
 apps/server/src/bin/
   mcp-stdio.ts        stdio entry point
-  mcp-http.ts         HTTP entry point
+  mcp-http.ts         HTTP entry point (/mcp, /api/*, /downloads/:token -- see below and docs/rest-api.md)
 ```
+
+Since M6, `mcp-http.ts` serves more than `/mcp`: `apps/server/src/http-app.ts`'s `buildHttpApp()` wraps
+`buildMcpHttpApp()` (unchanged from M5) and additionally mounts the REST API and CSV download route on
+the exact same Fastify instance and port, so the URL `export_contacts` returns resolves against the
+same running server. Details: `docs/rest-api.md`.
 
 `registerTools()` is called by both entry points with the same `McpServices` bundle, so stdio and HTTP
 run identical tool definitions, schemas and business logic -- only how the caller's principal is
@@ -193,9 +198,6 @@ implementation replaces it. Its SDK findings remain documented in `docs/decision
 
 ## Known limitations / deferred
 
-- `GET /downloads/:token` (serving `ExportService.download`) is not implemented yet -- that is M6's REST
-  work. `export_contacts` still returns a correctly-shaped, time-limited URL today; nothing currently
-  serves it.
 - No MCP `resources` or `prompts` are exposed, only `tools` -- out of scope for this assignment.
 - Compatibility is demonstrated only against the MCP TypeScript SDK's own client, not against MCP
   Inspector or other third-party clients.

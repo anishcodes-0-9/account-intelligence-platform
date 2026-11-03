@@ -88,5 +88,41 @@ have no clean fix without breaking tool-discovery schemas, and is documented in 
 after the initial M5 implementation + 8 new hardening-round tests), run clean twice in full and the new
 timing-sensitive files run three additional times with no flakiness. Details: `docs/mcp-server.md`.
 
+## M6 - REST API and CSV downloads: complete, reviewed and approved
+Done: `GET /downloads/:token` (`apps/server/src/rest/downloads.ts`) serves `ExportService.download`
+unchanged from M4/M5 -- unknown, malformed and expired tokens all fall through its single `NotFoundError`
+to an identical `404`; the route takes no Authorization header since the 32-byte token itself (only its
+SHA-256 stored) is the credential, as it already was. Five REST endpoints
+(`apps/server/src/rest/routes.ts`) -- `GET /api/companies`, `GET /api/companies/:companyId`,
+`GET /api/contacts`, `POST /api/contacts/:contactId/enrich`, `POST /api/contacts/export` -- call the
+exact `CompanyService`/`ContactService`/`EnrichmentService`/`ExportService` methods the MCP tools call,
+with the same `@aip/contracts` schemas; no business rule is duplicated. Bearer auth
+(`apps/server/src/rest/auth.ts`) reuses `ApiKeyService.verify` unchanged, and each route's required
+scope is enforced inside the service itself (`requireScope`), identically to MCP. `apps/server/src/
+http-app.ts`'s `buildHttpApp()` mounts the REST routes and the download route on the same Fastify
+instance `buildMcpHttpApp()` (M5, untouched) already serves `/mcp` from, so one process/port serves all
+three; `bin/mcp-http.ts` now calls `buildHttpApp()` instead of `buildMcpHttpApp()` directly -- its only
+change. No new database tables; no dependencies added.
+
+New integration tests (`apps/server/test/rest-api.test.ts`, `downloads.test.ts`,
+`rest-mcp-parity.test.ts`): a real Node `http.request` client against the real Fastify app, against a
+real, isolated, migrated Postgres database. Covered: all five REST operations succeeding; missing,
+invalid, expired and revoked keys (`401`, credential never echoed); insufficient scope (`403 FORBIDDEN`);
+validation failures and missing records (`400`/`404`); a full MCP `export_contacts` call followed by a
+real HTTP download of the resulting CSV (correct `Content-Type`/`Content-Disposition`/row count);
+REST's own `POST /api/contacts/export` followed by downloading that same export, proving both transports
+write to one export store; unknown and malformed download tokens returning byte-identical `404` bodies;
+and that REST and MCP return identical data/identical `FORBIDDEN` enforcement for the same input and key.
+The expired-token case needed a controllable clock (the same `now` injection point
+`packages/core/test/export-service.test.ts` already uses) rather than waiting on the real 15-minute TTL,
+applied only to that one sub-test via a second, standalone Fastify app on the same database -- documented
+in `docs/rest-api.md`. 262 tests passing (241 after M5's hardening round + 21 new M6 tests), full suite
+run clean twice. Details: `docs/rest-api.md`; `docs/mcp-server.md` updated to reflect that `mcp-http.ts`
+now serves REST and downloads too.
+
+Limitations: no OAuth, no external enrichment provider (unchanged from M3/M4); REST has not been tested
+against any client other than Node's own `http` module (no browser/CORS testing, since `apps/web` is not
+built yet).
+
 ## Next
-- **M6 is next (not started):** REST API and `GET /downloads/:token` (calls `ExportService.download`). `apps/web` (Next.js) comes after that, talking to REST only.
+- **M7 is next (not started):** `apps/web` (Next.js), talking to the M6 REST API only.
