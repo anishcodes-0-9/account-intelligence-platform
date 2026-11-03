@@ -1,7 +1,8 @@
-// MCP Streamable HTTP entry point, served at /mcp.
+// HTTP entry point: MCP Streamable HTTP (/mcp), the REST API (/api/*) and CSV downloads
+// (/downloads/:token), all served from one Fastify app on one host/port.
 import { createLogger } from "@aip/core";
 import { downloadBaseUrl, loadConfig } from "../config.js";
-import { buildMcpHttpApp } from "../mcp/http-app.js";
+import { buildHttpApp } from "../http-app.js";
 import { buildServices } from "../mcp/services.js";
 
 try {
@@ -18,7 +19,7 @@ async function main(): Promise<void> {
     downloadBaseUrl: downloadBaseUrl(config),
     logger,
   });
-  const { app, close } = buildMcpHttpApp(services, services.apiKeys, logger, { host: config.HOST });
+  const { app, close } = buildHttpApp(services, logger, { host: config.HOST });
 
   const shutdown = async (signal: string): Promise<void> => {
     logger.info({ signal }, "shutting down");
@@ -31,7 +32,7 @@ async function main(): Promise<void> {
   process.on("SIGTERM", () => void shutdown("SIGTERM"));
 
   await app.listen({ host: config.HOST, port: config.PORT });
-  logger.info({ host: config.HOST, port: config.PORT }, "mcp http listening on /mcp");
+  logger.info({ host: config.HOST, port: config.PORT }, "server listening (/mcp, /api, /downloads)");
 }
 
 main().catch((error: unknown) => {
