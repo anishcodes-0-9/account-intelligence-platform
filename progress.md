@@ -37,6 +37,56 @@ New `packages/core/test/log-redaction.test.ts` (11 tests) drives the real `mapEr
 
 212 tests passing (188 M4-baseline + 16 atomicity/sanitization/export-boundary + 8 new log-redaction regression tests).
 
+## M5 - Real MCP server, stdio and Streamable HTTP: complete, reviewed and approved
+Done: shared `registerTools()` (`apps/server/src/mcp/register-tools.ts`) defines all five tools --
+`search_companies`, `get_company`, `search_contacts`, `enrich_contact`, `export_contacts` -- once, with
+their `@aip/contracts` schemas and the real `CompanyService`/`ContactService`/`EnrichmentService`/
+`ExportService`; both the stdio (`apps/server/src/bin/mcp-stdio.ts`) and Streamable HTTP
+(`apps/server/src/bin/mcp-http.ts`, served at `/mcp` via `apps/server/src/mcp/http-app.ts`) entry points
+call it through `createAipMcpServer()`, so no tool logic is duplicated between transports. Every thrown
+error is caught in the tool handler and mapped through the existing `mapError()` to an `isError` result
+(never a raw thrown message, which the SDK would otherwise echo verbatim -- `docs/decisions/0001`).
+
+Authentication reuses `ApiKeyService` unchanged. stdio verifies `AIP_API_KEY` once at startup (exit 1,
+no stdout, no credential on stderr, if missing/invalid/expired/revoked) and injects the fixed principal
+into every tool call by closure. HTTP verifies the `Authorization: Bearer` header per request in a
+Fastify route and carries the verified principal through the MCP SDK's own `AuthInfo` channel
+(`AuthInfo.extra`, read back via `ctx.http.authInfo` in each tool handler) -- never derived from
+anything the client supplies. Each tool's required scope (`companies:read` / `contacts:read` /
+`contacts:enrich` / `contacts:export`, matching the table in `docs/mcp-server.md`) is enforced by the
+service's own `requireScope`, producing a `FORBIDDEN` `isError` result on a per-call basis.
+
+Removed the M1 spike entirely (`apps/server/src/spike/*`, `apps/server/test/spike-*`, `SPIKE_API_KEY`);
+its SDK findings stay in `docs/decisions/0001-mcp-sdk-v2-spike.md` since M5 relied on them directly.
+Added `DOWNLOAD_BASE_URL` to `apps/server/src/config.ts` (defaults to `http://<HOST>:<PORT>`) so
+`export_contacts` has a download origin ahead of M6's REST `GET /downloads/:token`.
+
+New protocol-level tests: `apps/server/test/mcp-stdio.test.ts` and `mcp-http.test.ts` each spawn/serve
+the real binaries and drive them with the real MCP SDK client (`Client` + `StdioClientTransport` /
+`StreamableHTTPClientTransport`) against a real, isolated, migrated Postgres database -- tool discovery,
+all five tools executing successfully, unknown ids, invalid arguments, missing/invalid/expired/revoked
+keys, insufficient-scope `FORBIDDEN`, a usable export download URL, and no credential/download-URL in
+logs. `mcp-parity.test.ts` asserts stdio and HTTP return byte-identical `structuredContent` for the same
+input.
+
+Staff-level review round (post-initial-implementation): approved with conditions, then a focused
+hardening pass closed every condition without touching the architecture. Added `mcp-http-concurrency.test.ts`
+(two real clients, two different keys/scopes, 25 rounds of deliberately interleaved concurrent calls,
+plus a database-level check that no principal's writes ever carried the other key's id -- proves
+concurrent requests from different principals never cross-contaminate); `mcp-http-revocation.test.ts`
+(connect, succeed, revoke the exact key via the real `ApiKeyService`, reuse the same never-reconnected
+session, confirm the next call is rejected `401 UNAUTHENTICATED` -- proves the key is re-verified on
+every request, not cached from the initial connect); `mcp-http-security.test.ts` (Host/Origin/
+DNS-rebinding and malformed-request regression tests ported from the deleted M1 spike, so that coverage
+survived the spike's removal); and a stdout/stderr-hygiene test in `mcp-stdio.test.ts` driving one real
+tool call with hand-written JSON-RPC frames (the SDK's `StdioClientTransport` exposes `.stderr` but not
+raw stdout, so this is the only way to inspect the actual bytes) confirming stdout carries only
+JSON-RPC frames and diagnostics land on stderr only. The SDK-level-shape-rejection vs.
+service-level-`ValidationError`-rejection difference in `isError` result shape was investigated, found to
+have no clean fix without breaking tool-discovery schemas, and is documented in `docs/mcp-server.md`
+("Validation error shapes") with a regression test locking in the distinction. 241 tests passing (233
+after the initial M5 implementation + 8 new hardening-round tests), run clean twice in full and the new
+timing-sensitive files run three additional times with no flakiness. Details: `docs/mcp-server.md`.
+
 ## Next
-- **M5 MCP server is next (not started):** shared `registerTools`, stdio + `/mcp`, errors via `mapError`, delete the spike. M6 adds REST and `GET /downloads/:token` (calls `ExportService.download`).
-- The spike (`SPIKE_API_KEY` in `.env.example`, its tests) is temporary and kept until M5. Temporary spike code lives in `apps/server/src/spike` and `apps/server/test/spike-*`; delete in M5.
+- **M6 is next (not started):** REST API and `GET /downloads/:token` (calls `ExportService.download`). `apps/web` (Next.js) comes after that, talking to REST only.
