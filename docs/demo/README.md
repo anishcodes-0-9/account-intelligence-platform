@@ -180,12 +180,31 @@ An MCP client configuration example for a Streamable HTTP client (shape varies b
 ## Manual screenshot capture (not automated here)
 
 No screenshots or recordings are included -- this environment has no display to capture from, and none
-are fabricated. To capture real ones:
+are fabricated. A demo video script with the exact commands to run on camera is at
+`docs/demo/video-script.md`. The assignment requires screenshots or a short video covering four things:
+tool discovery, tool execution, authentication flow, and error handling (items 1-4 below). Items 5-6 are
+additional evidence beyond what's required, included because the implementation already supports them.
+For standalone screenshots covering all six:
 
-1. Open MCP Inspector's web UI (`npx @modelcontextprotocol/inspector`, no `--cli`), connect it to
-   `http://127.0.0.1:3001/mcp` with a valid `Authorization: Bearer <key>` header, and screenshot its
-   "Tools" tab (discovery) and a `tools/call` result panel (execution).
-2. For Claude Code itself as a visible client: run `claude mcp add --transport http aip
+1. **Tool discovery**: open MCP Inspector's web UI (`npx @modelcontextprotocol/inspector`, no `--cli`),
+   connect it to `http://127.0.0.1:3001/mcp` with a valid `Authorization: Bearer <key>` header, and
+   screenshot its "Tools" tab listing all five tools.
+2. **Successful tool execution**: in the same Inspector session, call `search_companies` with
+   `{"query": "Intelligence", "country": "Australia"}` and screenshot the result panel.
+3. **Authentication failure**: call any tool with a missing or garbage `Authorization` header and
+   screenshot the `401 UNAUTHENTICATED` response (Inspector needs `--stored-auth-only` in CLI mode for
+   this, or just omit the header in the web UI).
+4. **Scope rejection**: with a key scoped only to `companies:read`, call `export_contacts` in the web UI
+   and screenshot the result panel showing `isError: true` with `structuredContent.error.code: "FORBIDDEN"`
+   — this is a per-call MCP-level rejection inside a successful session, not an HTTP 403 (Inspector's web
+   UI, unlike its CLI, is not strict about `outputSchema` validation, so this should render normally; see
+   "A genuine client-side finding" above if the CLI is used instead).
+5. **CSV download**: run `pnpm --filter @aip/server demo:mcp`, copy the (unredacted, local-only)
+   download URL it prints before redaction would apply in evidence, open it in a browser or `curl` it,
+   and screenshot the downloaded CSV content.
+6. **Concurrent execution**: screenshot the demo script's own console output during its bounded-
+   concurrency section, showing the semaphore's max-observed-in-flight count and the overlap evidence.
+7. For Claude Code itself as a visible client: run `claude mcp add --transport http aip
    http://127.0.0.1:3001/mcp --header "Authorization: Bearer <key>"` in an interactive terminal, approve
    the server when prompted, start a normal (not `-p`) session in this repo, and screenshot a
    conversation where it calls `mcp__aip__search_companies` etc. -- this was not possible to automate

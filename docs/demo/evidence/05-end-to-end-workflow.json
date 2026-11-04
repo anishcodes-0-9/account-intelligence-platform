@@ -112,14 +112,14 @@
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.852Z"
+            "observedAt": "2026-11-03T22:57:18.641Z"
           },
           {
             "field": "linkedin",
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.852Z"
+            "observedAt": "2026-11-03T22:57:18.641Z"
           }
         ]
       }
@@ -134,8 +134,8 @@
     },
     "output": {
       "downloadUrl": "http://127.0.0.1:3001/downloads/***redacted***",
-      "exportId": "cmw199l4n0002z0rh5y07gcn4",
-      "expiresAt": "2026-11-03T22:39:34.871Z",
+      "exportId": "cmw1afoen00025nrh9u2o82i8",
+      "expiresAt": "2026-11-03T23:12:18.670Z",
       "rowCount": 2
     }
   },

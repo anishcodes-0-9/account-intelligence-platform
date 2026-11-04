@@ -16,40 +16,40 @@
     {
       "companyId": "cmp_1",
       "startMs": 0,
-      "endMs": 8
+      "endMs": 7
     },
     {
       "companyId": "cmp_2",
       "startMs": 0,
-      "endMs": 12
+      "endMs": 9
     },
     {
       "companyId": "cmp_3",
       "startMs": 0,
-      "endMs": 29
+      "endMs": 18
     },
     {
       "companyId": "cmp_4",
-      "startMs": 8,
-      "endMs": 14
+      "startMs": 7,
+      "endMs": 11
     },
     {
       "companyId": "cmp_5",
-      "startMs": 12,
-      "endMs": 16
+      "startMs": 9,
+      "endMs": 12
     },
     {
       "companyId": "cmp_6",
-      "startMs": 14,
-      "endMs": 17
+      "startMs": 11,
+      "endMs": 13
     }
   ],
   "liveSampler": {
     "description": "sem.currentInFlight polled every ~1ms for the duration of the concurrent run -- a direct, live observation of overlap, not one reconstructed from start/end timestamps after the fact.",
-    "sampleCount": 24,
+    "sampleCount": 12,
     "maxSampledInFlight": 3,
-    "samplesAtTwoOrMore": 13,
-    "samplesAtLimit": 12,
+    "samplesAtTwoOrMore": 8,
+    "samplesAtLimit": 7,
     "samples": [
       3,
       3,
@@ -58,19 +58,7 @@
       3,
       3,
       3,
-      3,
-      3,
-      3,
-      3,
-      3,
       2,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
       1,
       1,
       1,
