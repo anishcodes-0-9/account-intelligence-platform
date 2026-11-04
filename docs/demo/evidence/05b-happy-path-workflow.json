@@ -14,14 +14,14 @@
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.888Z"
+            "observedAt": "2026-11-03T22:57:18.685Z"
           },
           {
             "field": "linkedin",
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.888Z"
+            "observedAt": "2026-11-03T22:57:18.685Z"
           }
         ]
       }
@@ -39,14 +39,14 @@
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.899Z"
+            "observedAt": "2026-11-03T22:57:18.691Z"
           },
           {
             "field": "linkedin",
             "source": "mock-synthetic",
             "synthetic": true,
             "verified": false,
-            "observedAt": "2026-11-03T22:24:34.899Z"
+            "observedAt": "2026-11-03T22:57:18.691Z"
           }
         ]
       }
@@ -61,8 +61,8 @@
     },
     "output": {
       "downloadUrl": "http://127.0.0.1:3001/downloads/***redacted***",
-      "exportId": "cmw199l5q0005z0rh16rcadt9",
-      "expiresAt": "2026-11-03T22:39:34.910Z",
+      "exportId": "cmw1afofg00055nrh7v5q5gt3",
+      "expiresAt": "2026-11-03T23:12:18.699Z",
       "rowCount": 2
     }
   },
